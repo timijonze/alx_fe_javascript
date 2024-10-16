@@ -28,7 +28,6 @@ setInterval(fetchQuotesFromServer, 30000); // Fetch every 30 seconds
 
 // Function to sync fetched quotes with local storage
 function syncQuotesWithLocalStorage(newQuotes) {
-  // Fetch existing quotes from local storage
   const existingQuotes = JSON.parse(localStorage.getItem('quotes')) || [];
   const mergedQuotes = [...existingQuotes];
   let conflicts = [];
@@ -38,7 +37,6 @@ function syncQuotesWithLocalStorage(newQuotes) {
     if (exists) {
       // Conflict detected
       conflicts.push(newQuote.text);
-      // Optionally, you can decide to use the new quote or keep the existing one
       console.warn(`Conflict detected for quote: "${newQuote.text}". Existing quote will be kept.`);
     } else {
       mergedQuotes.push(newQuote); // Add new quote if it doesn't exist
@@ -81,7 +79,7 @@ function showRandomQuote() {
 }
 
 // Function to add a new quote
-function addQuote() {
+async function addQuote() {
   const newQuoteText = document.getElementById('newQuoteText').value;
   const newQuoteCategory = document.getElementById('newQuoteCategory').value;
 
@@ -96,9 +94,33 @@ function addQuote() {
   populateCategories(); // Update the categories in the dropdown
   showRandomQuote(); // Display a new random quote
 
+  // Attempt to send the new quote to the server
+  await postQuoteToServer(newQuote);
+
   // Clear input fields
   document.getElementById('newQuoteText').value = '';
   document.getElementById('newQuoteCategory').value = '';
+}
+
+// Function to post a new quote to the server
+async function postQuoteToServer(quote) {
+  try {
+    const response = await fetch(apiUrl, {
+      method: "POST", // Specify the HTTP method
+      headers: { // Set the request headers
+        "Content-Type": "application/json" // Specify the content type
+      },
+      body: JSON.stringify(quote) // Convert the quote object to JSON
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to post quote to the server.");
+    }
+    const data = await response.json();
+    console.log('Quote posted successfully:', data);
+  } catch (error) {
+    console.error("Post error:", error);
+  }
 }
 
 // Function to save quotes to local storage
