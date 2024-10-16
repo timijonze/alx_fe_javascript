@@ -54,6 +54,9 @@ function syncQuotesWithLocalStorage(newQuotes) {
     displayNotification('New quotes fetched successfully!');
   }
 
+  // Notify user about syncing with the server
+  displayNotification('Quotes synced with server!');
+
   populateCategories(); // Update the categories in the dropdown
   showRandomQuote(); // Display a new random quote
 }
