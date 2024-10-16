@@ -15,7 +15,43 @@ const quotes = [
     quoteDisplay.innerHTML = `<p>${randomQuote.text}</p><p><em>Category: ${randomQuote.category}</em></p>`;
   }
   
-  // Function to add a new quote dynamically
+  // Function to dynamically create and display the form for adding a new quote
+  function createAddQuoteForm() {
+    const formContainer = document.createElement('div');
+    formContainer.id = 'quoteFormContainer';
+  
+    formContainer.innerHTML = `
+      <h2>Add a New Quote</h2>
+      <form id="quoteForm">
+        <label for="quoteText">Quote:</label>
+        <input type="text" id="quoteText" name="quoteText" required><br>
+        <label for="quoteCategory">Category:</label>
+        <input type="text" id="quoteCategory" name="quoteCategory" required><br>
+        <button type="submit">Add Quote</button>
+      </form>
+    `;
+  
+    document.body.appendChild(formContainer);
+  
+    // Handle form submission
+    const quoteForm = document.getElementById('quoteForm');
+    quoteForm.addEventListener('submit', (event) => {
+      event.preventDefault(); // Prevent page from refreshing
+      const newQuoteText = document.getElementById('quoteText').value;
+      const newQuoteCategory = document.getElementById('quoteCategory').value;
+  
+      // Add the new quote to the quotes array
+      quotes.push({ text: newQuoteText, category: newQuoteCategory });
+  
+      // Clear the form after submission
+      quoteForm.reset();
+  
+      // Optionally, display the newly added quote immediately
+      showRandomQuote();
+    });
+  }
+  
+  // Function to add a new quote directly from the inputs in the HTML (if you have a static form in the HTML)
   function addQuote() {
     const newQuoteText = document.getElementById('newQuoteText').value;
     const newQuoteCategory = document.getElementById('newQuoteCategory').value;
@@ -40,5 +76,5 @@ const quotes = [
   // Set up event listener for the 'Show New Quote' button
   document.getElementById('newQuote').addEventListener('click', showRandomQuote);
   
-  // Show a random quote when the page loads
-  window.onload = showRandomQuote;
+  // Create the form for adding new quotes when the page loads
+  window.onload = createAddQuoteForm;
