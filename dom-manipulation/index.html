@@ -15,6 +15,12 @@
     <input id="newQuoteCategory" type="text" placeholder="Enter quote category" />
     <button onclick="addQuote()">Add Quote</button>
   </div>
+  <div>
+    <label for="categoryFilter">Filter by category:</label>
+    <select id="categoryFilter" onchange="filterQuotes()">
+      <option value="all">All Categories</option>
+    </select>
+  </div>
 
   <button onclick="exportQuotesToJson()">Export to JSON</button> 
   <button onclick="exportQuotesToJson()">Export Quotes</button>
