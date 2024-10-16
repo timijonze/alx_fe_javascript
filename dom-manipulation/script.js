@@ -60,29 +60,40 @@ function createAddQuoteForm() {
   });
 }
 
-// Function to add a new quote directly from the inputs in the HTML (if you have a static form in the HTML)
-function addQuote() {
-  const newQuoteText = document.getElementById('newQuoteText').value;
-  const newQuoteCategory = document.getElementById('newQuoteCategory').value;
+// Function to export quotes to a JSON file
+function exportQuotesToJson() {
+  const dataStr = JSON.stringify(quotes, null, 2); // Pretty print with 2 spaces
+  const blob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
 
-  // Validate input
-  if (newQuoteText === '' || newQuoteCategory === '') {
-    alert('Please enter both a quote and a category.');
-    return;
-  }
+  const downloadLink = document.createElement('a');
+  downloadLink.href = url;
+  downloadLink.download = 'quotes.json'; // Filename for the download
+  downloadLink.click(); // Trigger the download
+  URL.revokeObjectURL(url); // Clean up the object URL
+}
 
-  // Add the new quote to the quotes array
-  quotes.push({ text: newQuoteText, category: newQuoteCategory });
+// Function to import quotes from a JSON file
+function importFromJsonFile(event) {
+  const fileReader = new FileReader();
+  fileReader.onload = function(event) {
+    try {
+      const importedQuotes = JSON.parse(event.target.result);
 
-  // Save the updated quotes array to local storage
-  saveQuotesToLocalStorage();
-
-  // Clear input fields after adding the quote
-  document.getElementById('newQuoteText').value = '';
-  document.getElementById('newQuoteCategory').value = '';
-
-  // Optionally, show the newly added quote immediately
-  showRandomQuote();
+      // Validate the structure of the imported quotes
+      if (Array.isArray(importedQuotes) && importedQuotes.every(q => q.text && q.category)) {
+        quotes.push(...importedQuotes);
+        saveQuotesToLocalStorage(); // Update local storage
+        alert('Quotes imported successfully!');
+        showRandomQuote(); // Show a random quote after importing
+      } else {
+        alert('Invalid JSON format. Make sure the JSON contains an array of quotes with "text" and "category" properties.');
+      }
+    } catch (e) {
+      alert('Error parsing the JSON file. Please check the file and try again.');
+    }
+  };
+  fileReader.readAsText(event.target.files[0]);
 }
 
 // Set up event listener for the 'Show New Quote' button
